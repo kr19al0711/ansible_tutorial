@@ -1,3 +1,6 @@
-agent1@192.168.0.157 apache_package=apache2 php_package=libapache2-mod-php
-agent2@192.168.0.223 apache_package=apache2 php_package=libapache2-mod-php
-agent3@192.168.0.104 apache_package=httpd php_package=php
+[web_server]
+agent1@192.168.0.157
+agent3@192.168.0.104
+
+[db_server]
+agent2@192.168.0.223
