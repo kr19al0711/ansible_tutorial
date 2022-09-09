@@ -44,6 +44,15 @@
       state: latest
     when: ansible_distribution == "Ubuntu"
 
+  - name: Copy default html to web servers
+    tags: httpd,apache,apache2
+    copy: 
+      src: default-site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
 - name: Install MariaDB on Database servers
   hosts: db_server
   become: true
