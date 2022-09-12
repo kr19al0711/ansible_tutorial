@@ -44,6 +44,21 @@
       state: latest
     when: ansible_distribution == "Ubuntu"
 
+  - name: Enable httpd service (CentOS)
+    tags: httpd,CentOS,apache
+    service:
+      name: httpd
+      state: started
+    when: ansible_distribution == "CentOS"
+
+  - name: Enable port 80 for httpd service (CentOS)
+    tags: httpd,apache, CentOS
+    firewalld:
+      port: 80/tcp
+      state: enabled
+      immediate: true
+    when: ansible_distribution == "CentOS"
+
   - name: Copy default html to web servers
     tags: httpd,apache,apache2
     copy: 
@@ -52,6 +67,26 @@
       owner: root
       group: root
       mode: 0644
+    
+- name: Configuration change for CentOS httpd
+  hosts: web_server
+  become: true
+  tasks:
+  - name: Change admin email address (CentOS)
+    tags: httpd,CentOS,apache
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin kripalparsekar.it@gmail.com
+    when: ansible_distribution == "CentOS"
+    register: httpd_change
+
+  - name: Restart CentOS server after config change
+    tags: httpd,CentOS,apache
+    service:
+      name: httpd
+      state: restarted
+    when: httpd_change.changed
 
 - name: Install MariaDB on Database servers
   hosts: db_server
