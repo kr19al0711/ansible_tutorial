@@ -1,0 +1,47 @@
+---
+- name: Update packages on CentOS and Ubuntu
+  hosts: all
+  become: true
+  tags: always
+  pre_tasks:
+  
+  - name: Update Packages on CentOS
+    tags: always
+    dnf:
+      update_cache: yes
+      update_only: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: Update Packages on Ubuntu
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- name: Play to bootstrap Ansible controlled host
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Create User to Automate task on host machine
+      tags: always
+      user: 
+        name: autoMatic
+        groups: root
+        comment: User to automate processes
+
+    - name: Add SSH key to user created
+      tags: always
+      authorized_key: 
+        user: autoMatic
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPN/lWdHpkDOIm3/c385VOKqHN1LFhet0UvKGG04bCG ansible"
+
+    - name: Copy sudoer file for user in the hosts servers
+      tags: always
+      copy:
+        src: sudoer_autoMatic
+        dest: /etc/sudoers.d/autoMatic 
+        owner: root
+        group: root
+
